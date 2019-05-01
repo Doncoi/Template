@@ -14,7 +14,7 @@ int n, m, pos;
 char s[MAXN * 20];
 
 inline int newNode() {
-	for(int i = 0; i < 26; ++ i) node[pos][i] = 0;
+	for(int i = 0; i < 26; ++ i) node[pos].next[i] = 0;
 	node[pos].fail = node[pos].cnt = 0;
     return pos ++;
 }

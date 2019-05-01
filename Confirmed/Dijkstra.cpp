@@ -1,3 +1,4 @@
+#include <queue>
 #include <cstdio>
 #include <cstring>
 #include <algorithm>
@@ -46,15 +47,16 @@ inline void addEdge(int from, int to, int cost) {
 
 inline int Dijkstra() {
 	for(int i = 1; i <= n; ++ i) node[i].dis = INF;
-	node[s].dis = 0, q.push(Dist(s, 0));
+	node[s].dis = 0; q.push(Dist(s, 0));
 
 	while(!q.empty()) {
-		Dist tmp = q.top; q.pop;
+		Dist tmp = q.top(); 
+		q.pop();
 
 		int u = tmp.x, d = node[u].dis;
 		if(tmp.dist != d) continue
 		for(int e = node[u].head, v; e; e = edge[e].next) {
-			if(node[v].dis <= d + edge[e].cost) continue;
+			if(node[v = edge[e].to].dis <= d + edge[e].cost) continue;
 			node[v].dis = d + edge[e].cost;
 			q.push(Dist(v, node[v].dis)); 
 		}

@@ -15,13 +15,13 @@ std :: queue<int> q;
 
 inline void addEdge(int from, int to, int flow) {
 	edge[++ cnt].next = node[from].head, node[from].head = cnt;
-	edge[cnt].to = to; edge[cnt].flow = flow;
+	edge[cnt].to = to, edge[cnt].flow = flow;
 
 	edge[++ cnt].next = node[to].head, node[to].head = cnt;
 	edge[cnt].to = from, edge[cnt].flow = 0;
 }
 
-inline bool BFS(int x) {
+bool BFS(int x) {
 	int u = x, v;
 	for(int i = 0; i < MAXN; ++ i) 
 		node[i].dep = 0;
@@ -49,7 +49,7 @@ int DFS(int x, int flow) {
 	return res;	
 }
 
-inline int Dinic() {
+int Dinic() {
 	int maxFlow = 0;
 	while(BFS(s)) 
 		maxFlow += DFS(s, MAXM);
