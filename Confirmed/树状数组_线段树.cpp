@@ -1,5 +1,5 @@
 //树状数组**************************************************************************************************************************************
-int tree[maxn];
+int a[maxn], tree[maxn];
 
 void add(int k,int num) {  
     while(k <= n) {  
@@ -8,13 +8,23 @@ void add(int k,int num) {
     }  
 }  
 
-int read(int k) {                 //1~k的区间和  
+int getSum(int k) {    //统计1~k的区间和
     int sum = 0;  
     while(k) {  
         sum += tree[k];  
-        k -= k & -k;  
+        k -= lowbit(k);  
     }  
     return sum;
+}
+
+int getSum(int l, int r) {    //统计给定边界的区间和
+    return getSum(r) - getSum(l - 1);
+}
+
+void build() {    
+    for(int i = 1; i <= n; ++ i) {
+        add(i, a[i]);
+    }
 }
 
 //线段树*******************************************************************************************************************************************
@@ -112,6 +122,136 @@ struct Node {
     int query(int l, int r) {                  //区间查询
         if(l == this->l && r == this->r) {
             return sum;
+        } else {
+            pushDown();
+            int ans = 0;
+            if(l < mid) ans += lc->query(l, std::min(mid, r));
+            if(r > mid) ans += rc->query(std::max(mid, l), r);
+            return ans;
+        }
+    }
+};
+
+//双标记（支持重设）线段树 CodeVS4927
+#include <algorithm>
+
+#define INF 0x3f3f3f3
+#define mid (this->l + this->r >> 1)
+
+struct Node {
+    int l, r; // [l, r), 该模板左闭右开，build(1, N + 1)， query(l, r + 1);
+    Node *lc, *rc;                    //两个指向node类型的指针
+    int sum, max, min;                        
+    int set, add;
+    
+    Node(int l, int r) {              
+        this->l = l, this->r = r;     //this -> l == node[pre].l
+        sum = max = add = 0;
+        min = INF, set = -INF;
+    }
+    
+    void addTag(int type, int delta) {           //延迟标记，不查询不下放
+        if(type == 1)    //add
+        {
+            add += delta, sum += delta * (r - l);
+            maxn += delta, minn += delta;
+            if(set > -INF) 
+                set += delta;
+            else 
+                set = delta;
+        }
+        else    //set
+        {
+            add = 0;
+            if(set > -INF)
+                set += delta, sum += delta * (r - l), 
+                maxn += delta, minn += delta;
+            else
+                set = delta, sum = delta * (r - l),
+                maxn = delta, minn = delta;
+        }
+    }
+
+    void pushDown() {                  //标记下放
+        if(set > -INF)
+        {
+            //一定先下传set标记
+            lc->addTag(2, set), rc->addTag(2, set);
+            set = -INF;
+        }
+        if(add)
+        {
+            lc->addTag(add), rc->addTag(add);
+            add = 0;
+        }
+    }
+
+    void update() {                    //由子区间更新
+        sum = lc->sum + rc->sum;      
+        max = std :: max(lc->max, rc->max);
+        min = std :: min(lc->min, rc->min);
+    }
+    
+    void build() {                     //构造
+        if(r - l == 1) {
+            sum = a[l];
+        } else {
+            lc = new Node(l, mid), lc->build();
+            rc = new Node(mid, r), rc->build();
+
+            update();
+        }
+    }
+    
+    void modify(int index, int delta) {          //单点修改
+        if(r - l == 1) {
+            sum += delta;
+        } else {
+            if(index < mid) {
+                lc->modify(index, delta);
+            } else {
+                rc->modify(index, delta);
+            }
+            
+            update();
+        }
+    }
+
+    void modify(int l, int r, int delta) {      //区间修改
+        if(l == this->l && r == this->r) {
+            addTag(delta);
+        } else {
+            if(l < mid) {
+                lc->modify(l, std::min(mid, r), delta);
+            }
+            if(r > mid) {
+                rc->modify(std::max(mid, l), r, delta);
+            }
+            
+            update();
+        }
+    }
+
+    int query(int type, int index) {                      //单点查询
+        if(r - l == 1) {
+            if(type == 1) return sum;
+            else if(type == 2) return maxn;
+            else return minn;
+        } else {
+            pushDown();
+            if(index < mid) {
+                return lc->query(index);
+            } else {
+                return rc->query(index);
+            }
+        }
+    }
+    
+    int query(int type, int l, int r) {                  //区间查询
+        if(l == this->l && r == this->r) {
+            if(type == 1) return sum;
+            else if(type == 2) return maxn;
+            else return minn;
         } else {
             pushDown();
             int ans = 0;

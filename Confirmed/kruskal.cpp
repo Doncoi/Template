@@ -53,7 +53,7 @@ static bool same(int u,int v)
   
 static int kruskal()  
 {  
-    int res =  0;  
+    int res = 0;  
     sort(edge,edge+E,cmp);  
     for (int i=0;i<E;++i)  
     {  

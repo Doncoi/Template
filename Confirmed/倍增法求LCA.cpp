@@ -1,5 +1,5 @@
 //倍增LCA******************************************************************************************************************************************
-inline void DFS(int u) {
+void DFS(int u) {
 	for(int e = node[u].head, v; e; e = edge[e].next) {
 		if(node[v = edge[e].to].dis) continue;
 		node[v].dis = node[u].dis + 1;
@@ -7,7 +7,7 @@ inline void DFS(int u) {
 	}
 }
 
-inline int LCA(int x, int y) {
+int LCA(int x, int y) {
 	int i, j;
 	if(node[x].dis < node[y].dis) swap(x, y);
 	for(i = 1; (1 << i) <= node[x].dis; ++ i); -- i;
@@ -23,8 +23,9 @@ inline int LCA(int x, int y) {
 	return parent[x][0];
 }
 
-inline void init() {
-	memset(parent, -1, sizeof(parent)); DFS(s);
+void init() {
+	memset(parent, -1, sizeof(parent)); 
+	DFS(s);
 	for(int j = 1; (1 << j) <= n; j ++) 
 		for(int i = 1; i <= n;i ++) 
 			if(parent[i][j - 1] != -1)
