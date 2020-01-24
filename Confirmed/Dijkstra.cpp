@@ -1,10 +1,5 @@
-#include <queue>
-#include <cstdio>
-#include <cstring>
-#include <algorithm>
-#include <iostream>
-#define MAXN 2505
-#define MAXM 25005
+#define MAXN 
+#define MAXM 
 #define INF 0x3f3f3f3f
 
 int n, m, s, t, cnt, ans;
@@ -52,13 +47,13 @@ inline int Dijkstra() {
 	while(!q.empty()) {
 		Dist tmp = q.top(); 
 		q.pop();
-
 		int u = tmp.x, d = node[u].dis;
-		if(tmp.dist != d) continue
+		if(tmp.dist != d) continue;
+
 		for(int e = node[u].head, v; e; e = edge[e].next) {
 			if(node[v = edge[e].to].dis <= d + edge[e].cost) continue;
 			node[v].dis = d + edge[e].cost;
-			q.push(Dist(v, node[v].dis)); 
+			q.push(Dist(v, node[v].dis)); //log(n)
 		}
 	}
 
